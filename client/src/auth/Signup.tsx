@@ -1,16 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { SignupInputState, userSignupSchema } from "@/schema/userSchema";
 import { Separator } from "@radix-ui/react-separator";
 import { LockKeyhole, Mail, Loader2, User, Phone } from "lucide-react";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { Link } from "react-router-dom";
-
-type SignupInputState = {
-  fullName: string;
-  contact: string;
-  email: string;
-  password: string;
-};
 
 const Signup = () => {
   const loading: boolean = false;
@@ -20,15 +14,25 @@ const Signup = () => {
     fullName: "",
     contact: "",
   });
+  const [errors, setErrors] = useState<Partial<SignupInputState>>({});
 
   const changeEventHandler = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    console.log(name, value);
+    // console.log(name, value);
     setInput({ ...input, [name]: value });
   };
   const LoginEventHandler = (e: FormEvent) => {
     e.preventDefault();
-    // console.log(input);
+    //form validation
+    const result = userSignupSchema.safeParse(input);
+    if (!result.success) {
+      const fieldErrors = result.error.formErrors.fieldErrors;
+      setErrors(fieldErrors as Partial<SignupInputState>);
+      return;
+    }
+    //api implementation
+
+    console.log(input);
   };
 
   return (
@@ -53,6 +57,9 @@ const Signup = () => {
               className="pl-10 focus-visible: ring-0 "
             />
             <User className="absolute inset-y-2 left-2 text-gray-500 pointer-events-none " />
+            {errors && (
+              <span className="text-xm text-red-500">{errors.fullName}</span>
+            )}
           </div>
         </div>
         <div className="mb-4">
@@ -66,6 +73,9 @@ const Signup = () => {
               className="pl-10 focus-visible: ring-0 "
             />
             <Phone className="absolute inset-y-2 left-2 text-gray-500 pointer-events-none " />
+            {errors && (
+              <span className="text-xm text-red-500">{errors.contact}</span>
+            )}
           </div>
         </div>
         <div className="mb-4">
@@ -79,6 +89,9 @@ const Signup = () => {
               className="pl-10 focus-visible: ring-0 "
             />
             <Mail className="absolute inset-y-2 left-2 text-gray-500 pointer-events-none " />
+            {errors && (
+              <span className="text-xm text-red-500">{errors.email}</span>
+            )}
           </div>
         </div>
 
@@ -93,6 +106,9 @@ const Signup = () => {
               className="pl-10 focus-visible: ring-0 "
             />
             <LockKeyhole className="absolute inset-y-2 left-2 text-gray-500 pointer-events-none " />
+            {errors && (
+              <span className="text-xm text-red-500">{errors.password}</span>
+            )}
           </div>
         </div>
         <div className="mb-2">
