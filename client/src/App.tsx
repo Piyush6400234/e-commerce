@@ -1,18 +1,28 @@
-
 import Login from "./auth/Login";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Signup from "./auth/Signup";
 import ForgetPassword from "./auth/ForgetPassword";
 import ResetPassword from "./auth/ResetPassword";
 import VerifyEmail from "./auth/VerifyEmail";
-import NavBar from "./components/NavBar";
 
+import HeroSection from "./components/HeroSection";
+import MainLayout from "./layout/MainLayout";
+import Profile from "./components/Profile";
 
 const appRouter = createBrowserRouter([
   {
     path: "/",
-    element: <NavBar />,
-    // children:
+    element: <MainLayout />,
+    children: [
+      {
+        path: "/",
+        element: <HeroSection />,
+      },
+      {
+        path: "/profile",
+        element: <Profile />,
+      },
+    ],
   },
   {
     path: "/login",
