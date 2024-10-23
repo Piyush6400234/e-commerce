@@ -1,14 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { LoginInputState, userLoginSchema } from "@/schema/userSchema";
 import { Separator } from "@radix-ui/react-separator";
 import { LockKeyhole, Mail, Loader2 } from "lucide-react";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { Link } from "react-router-dom";
-
-type LoginInputState = {
-  email: string;
-  password: string;
-};
 
 const Login = () => {
   const loading: boolean = false;
@@ -16,6 +12,7 @@ const Login = () => {
     email: "",
     password: "",
   });
+  const [errors, setErrors] = useState<Partial<LoginInputState>>({});
 
   const changeEventHandler = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -24,13 +21,19 @@ const Login = () => {
   };
   const LoginEventHandler = (e: FormEvent) => {
     e.preventDefault();
-    // console.log(input);
+    const result = userLoginSchema.safeParse(input);
+    if (!result.success) {
+      const fieldErrors = result.error.formErrors.fieldErrors;
+      setErrors(fieldErrors as Partial<LoginInputState>);
+      return;
+    }
+    console.log(input);
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen ">
       <form
-        className="md:p-8 w-full max-w-md border border-gray-200 rounded-lg mx-4"
+        className="md:p-8 w-full max-w-md  border-gray-200 rounded-lg mx-4"
         action=""
         onSubmit={LoginEventHandler}
       >
@@ -49,6 +52,9 @@ const Login = () => {
               className="pl-10 focus-visible: ring-0 "
             />
             <Mail className="absolute inset-y-2 left-2 text-gray-500 pointer-events-none " />
+            {errors && (
+              <span className="text-xs text-red-500">{errors.email}</span>
+            )}
           </div>
         </div>
 
@@ -63,9 +69,12 @@ const Login = () => {
               className="pl-10 focus-visible: ring-0 "
             />
             <LockKeyhole className="absolute inset-y-2 left-2 text-gray-500 pointer-events-none " />
+            {errors && (
+              <span className="text-xs text-red-500">{errors.password}</span>
+            )}
           </div>
         </div>
-        <div className="mb-2">
+        <div className="mb-2 text-center">
           {loading ? (
             <Button disabled className="bg-orange hover:bg-hoverOrange ">
               <Loader2 className="mr-2 h-4 w-4 animate-spin">Loading</Loader2>
@@ -75,12 +84,17 @@ const Login = () => {
               Login
             </Button>
           )}
+          <div className="mt-4">
+            <Link className="hover:text-blue-500 hover:underline" to={"/forget-password"}>
+              reset password
+            </Link>
+          </div>
         </div>
-        <Separator className="mt-2" />
-        <p>
+        <Separator/>
+        <p className="mt-2 text-center">
           Don't have an account? {""}
           <Link className="text-blue-500" to={"/signup"}>
-            SIgn up
+            Sign up
           </Link>
         </p>
       </form>
