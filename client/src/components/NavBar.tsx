@@ -38,8 +38,6 @@ import {
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Separator } from "./ui/separator";
 // import { Sheet, SheetTrigger } from "./ui/sheet";
 
@@ -174,7 +172,7 @@ const MobileNavbar = () => {
             <span>Profile</span>
           </Link>
           <Link
-            to={"/profile"}
+            to={"/order/status"}
             className="flex items-center gap-4 hover:bg-gray-200 px-3 py-2 rounded-lg cursor-pointer hover:text-gray-900 font-medium"
           >
             <HandPlatter />
@@ -188,7 +186,7 @@ const MobileNavbar = () => {
             <span>Cart (0)</span>
           </Link>
           <Link
-            to={"/profile"}
+            to={"/admin/menu"}
             className="flex items-center gap-4 hover:bg-gray-200 px-3 py-2 rounded-lg cursor-pointer hover:text-gray-900 font-medium"
           >
             <SquareMenu />
@@ -202,7 +200,7 @@ const MobileNavbar = () => {
             <span>Restaurant</span>
           </Link>
           <Link
-            to={"/profile"}
+            to={"/admin/orders"}
             className="flex items-center gap-4 hover:bg-gray-200 px-3 py-2 rounded-lg cursor-pointer hover:text-gray-900 font-medium"
           >
             <PackageCheck />
@@ -211,21 +209,19 @@ const MobileNavbar = () => {
         </SheetDescription>
 
         <SheetFooter className="flex flex-col gap-2">
-         
-              <div className="flex flex-row items-center gap-2">
-                <Avatar>
-                  <AvatarImage />
-                  <AvatarFallback>PK</AvatarFallback>
-                </Avatar>
-                <h1 className="font-bold ">Piyush K</h1>
-              </div>
-         
-            <SheetClose asChild>
-              <Button type="submit" className="bg-orange hover:bg-hoverOrange">
-                Logout
-              </Button>
-            </SheetClose>
-   
+          <div className="flex flex-row items-center gap-2">
+            <Avatar>
+              <AvatarImage />
+              <AvatarFallback>PK</AvatarFallback>
+            </Avatar>
+            <h1 className="font-bold ">Piyush K</h1>
+          </div>
+
+          <SheetClose asChild>
+            <Button type="submit" className="bg-orange hover:bg-hoverOrange">
+              Logout
+            </Button>
+          </SheetClose>
         </SheetFooter>
       </SheetContent>
     </Sheet>
