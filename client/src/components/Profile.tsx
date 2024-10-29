@@ -3,7 +3,6 @@ import {
   LocateIcon,
   Mail,
   MapPin,
-  MapPinHouse,
   MapPinnedIcon,
   Plus,
 } from "lucide-react";
@@ -12,6 +11,7 @@ import { useRef, useState } from "react";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Button } from "./ui/button";
+import { useUserStore } from "@/store/useUserStore";
 // type ProfileDataState = {
 //     fullname: string,
 //     email: string,
@@ -23,18 +23,20 @@ import { Button } from "./ui/button";
 // }
 
 const Profile = () => {
+  const { user, updateProfile } = useUserStore();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [profileData, setProfileData] = useState({
-    fullname: "",
-    email: "",
-    address: "",
-    city: "",
-    country: "",
-    profilePicture: "",
+    fullname: user?.fullname || "",
+    email: user?.email || "",
+    address: user?.address || "",
+    city: user?.city || "",
+    country: user?.country || "",
+    profilePicture: user?.profilePicture || "",
   });
   const imageRef = useRef<HTMLInputElement | null>(null);
-  const [selectedProfilePicture, setSelectedProfilePicture] =
-    useState<string>("");
-  const loading = false;
+  const [selectedProfilePicture, setSelectedProfilePicture] = useState<string>(
+    profileData.profilePicture || ""
+  );
 
   const fileChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -55,11 +57,17 @@ const Profile = () => {
     const { name, value } = e.target;
     setProfileData({ ...profileData, [name]: value });
   };
-  const updateProfileHandler = (e: React.FormEvent<HTMLFormElement>) => {
+  const updateProfileHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-      // console.log(profileData);
-      //api implementation
-      
+    try {
+      setIsLoading(true);
+      await updateProfile(profileData);
+      setIsLoading(false);
+    } catch (error) {
+      setIsLoading(false);
+    }
+    // console.log(profileData);
+    //api implementation
   };
   return (
     <form onSubmit={updateProfileHandler} className="max-w-7xl mx-auto my-5">
@@ -97,6 +105,7 @@ const Profile = () => {
           <div className="w-full">
             <Label>Email</Label>
             <input
+              disabled
               name="email"
               value={profileData.email}
               onChange={changeHandler}
@@ -142,7 +151,7 @@ const Profile = () => {
         </div>
       </div>
       <div className="text-center">
-        {loading ? (
+        {isLoading ? (
           <Button className="bg-orange hover:bg-hoverOrange" disabled>
             <Loader2 className="mr-2 w-4 h-4 animate-spin" />
             Please wait

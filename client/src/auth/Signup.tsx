@@ -1,27 +1,28 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SignupInputState, userSignupSchema } from "@/schema/userSchema";
+import { useUserStore } from "@/store/useUserStore";
 import { Separator } from "@radix-ui/react-separator";
 import { LockKeyhole, Mail, Loader2, User, Phone } from "lucide-react";
 import { ChangeEvent, FormEvent, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 
 const Signup = () => {
-  const loading: boolean = false;
   const [input, setInput] = useState<SignupInputState>({
     email: "",
     password: "",
-    fullName: "",
+    fullname: "",
     contact: "",
   });
   const [errors, setErrors] = useState<Partial<SignupInputState>>({});
-
+  const { signup, loading } = useUserStore();
+  const navigate = useNavigate();
   const changeEventHandler = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     // console.log(name, value);
     setInput({ ...input, [name]: value });
   };
-  const LoginEventHandler = (e: FormEvent) => {
+  const LoginEventHandler = async (e: FormEvent) => {
     e.preventDefault();
     //form validation
     const result = userSignupSchema.safeParse(input);
@@ -31,8 +32,12 @@ const Signup = () => {
       return;
     }
     //api implementation
-
-    console.log(input);
+    try {
+      await signup(input);
+      navigate("/verify-email")
+    } catch (error) {
+      console.log(error)
+    }
   };
 
   return (
@@ -51,14 +56,14 @@ const Signup = () => {
             <Input
               type="text"
               placeholder="Full name"
-              value={input.fullName}
-              name="fullName"
+              value={input.fullname}
+              name="fullname"
               onChange={changeEventHandler}
               className="pl-10 focus-visible: ring-0 "
             />
             <User className="absolute inset-y-2 left-2 text-gray-500 pointer-events-none " />
             {errors && (
-              <span className="text-xm text-red-500">{errors.fullName}</span>
+              <span className="text-xm text-red-500">{errors.fullname}</span>
             )}
           </div>
         </div>
