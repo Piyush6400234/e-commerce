@@ -1,25 +1,26 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LoginInputState, userLoginSchema } from "@/schema/userSchema";
+import { useUserStore } from "@/store/useUserStore";
 import { Separator } from "@radix-ui/react-separator";
 import { LockKeyhole, Mail, Loader2 } from "lucide-react";
 import { ChangeEvent, FormEvent, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const loading: boolean = false;
   const [input, setInput] = useState<LoginInputState>({
     email: "",
     password: "",
   });
   const [errors, setErrors] = useState<Partial<LoginInputState>>({});
-
+  const { loading, login } = useUserStore();
+  const navigate = useNavigate();
   const changeEventHandler = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     // console.log(input);
     setInput({ ...input, [name]: value });
   };
-  const LoginEventHandler = (e: FormEvent) => {
+  const LoginEventHandler = async (e: FormEvent) => {
     e.preventDefault();
     const result = userLoginSchema.safeParse(input);
     if (!result.success) {
@@ -27,7 +28,13 @@ const Login = () => {
       setErrors(fieldErrors as Partial<LoginInputState>);
       return;
     }
-    console.log(input);
+
+    await login(input);
+    try {
+      navigate("/")
+    } catch (error) {
+      console.log(error)
+    }
   };
 
   return (
@@ -85,12 +92,15 @@ const Login = () => {
             </Button>
           )}
           <div className="mt-4">
-            <Link className="hover:text-blue-500 hover:underline" to={"/forget-password"}>
+            <Link
+              className="hover:text-blue-500 hover:underline"
+              to={"/forget-password"}
+            >
               reset password
             </Link>
           </div>
         </div>
-        <Separator/>
+        <Separator />
         <p className="mt-2 text-center">
           Don't have an account? {""}
           <Link className="text-blue-500" to={"/signup"}>
